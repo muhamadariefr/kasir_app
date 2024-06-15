@@ -47,8 +47,10 @@ class _KasirHomePageState extends State<KasirHomePage> {
   }
 
   void _editItem(int index) {
-    final TextEditingController editItemController = TextEditingController(text: _items[index]['name']);
-    final TextEditingController editPriceController = TextEditingController(text: _items[index]['price'].toString());
+    final TextEditingController editItemController =
+        TextEditingController(text: _items[index]['name']);
+    final TextEditingController editPriceController =
+        TextEditingController(text: _items[index]['price'].toString());
 
     showDialog(
       context: context,
@@ -200,87 +202,136 @@ class _KasirHomePageState extends State<KasirHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Aplikasi Kasir Sederhana'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+        title: Row(
           children: [
-            TextField(
-              controller: _itemController,
-              decoration: InputDecoration(labelText: 'Nama Barang'),
-            ),
-            TextField(
-              controller: _priceController,
-              decoration: InputDecoration(labelText: 'Harga Barang'),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _addItem,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue, // Warna latar belakang biru
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.add,
-                      color: Colors.white), // Ikon plus dengan warna putih
-                  SizedBox(width: 8), // Spasi horizontal antara ikon dan teks
-                  Text(
-                    'Tambahkan Barang',
-                    style: TextStyle(color: Colors.white), // Warna teks putih
+            Icon(Icons.wallet), // Icon cashier
+            SizedBox(width: 8), // Spasi antara ikon dan teks
+            Text('Kasir'), // Judul aplikasi
+          ],
+        ),        
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue.shade300, Colors.blue.shade900],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              Card(
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      TextField(
+                        controller: _itemController,
+                        decoration: InputDecoration(labelText: 'Nama Barang'),
+                      ),
+                      TextField(
+                        controller: _priceController,
+                        decoration: InputDecoration(labelText: 'Harga Barang'),
+                        keyboardType: TextInputType.number,
+                      ),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: _addItem,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.add, color: Colors.white),
+                            SizedBox(width: 8),
+                            Text(
+                              'Tambahkan Barang',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _items.length,
-                itemBuilder: (ctx, index) {
-                  final item = _items[index];
-                  return ListTile(
-                    title: Text(item['name']),
-                    trailing: Row(
+              SizedBox(height: 20),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _items.length,
+                  itemBuilder: (ctx, index) {
+                    final item = _items[index];
+                    return Card(
+                      elevation: 4,
+                      margin: EdgeInsets.symmetric(vertical: 4),
+                      child: ListTile(
+                        title: Text(item['name']),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(_currencyFormat.format(item['price'])),
+                            IconButton(
+                              icon: Icon(Icons.edit),
+                              onPressed: () => _editItem(index),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete),
+                              onPressed: () => _removeItem(index),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton(
+                    onPressed: _resetItems,
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(_currencyFormat.format(item['price'])),
-                        IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () => _editItem(index),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete),
-                          onPressed: () => _removeItem(index),
+                        Icon(Icons.refresh, color: Colors.white), // Ikon reset
+                        SizedBox(
+                            width: 8), // Spasi horizontal antara ikon dan teks
+                        Text(
+                          'Reset Data',
+                          style: TextStyle(color: Colors.white),
                         ),
                       ],
                     ),
-                  );
-                },
+                  ),
+                  ElevatedButton(
+                    onPressed: _showReceiptDialog,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.visibility, color: Colors.white),
+                        SizedBox(
+                            width: 8), // Spasi horizontal antara ikon dan teks
+                        Text(
+                          'Lihat Struk',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _showReceiptDialog,
-              child: Text(
-                'Lihat dan Cetak Struk',
-                style: TextStyle(
-                    color: Colors.white), // Mengatur warna teks menjadi putih
-              ),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: _resetItems,
-              child: Text(
-                'Reset Semua Barang',
-                style: TextStyle(
-                    color: Colors.white), // Mengatur warna teks menjadi putih
-              ),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
